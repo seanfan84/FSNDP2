@@ -3,9 +3,32 @@
 This project is a multi-user blog, which people can view blog list but only logged in user can post new content, edit/delete the user's own content, like other users' post, and be able to comment on all posts.
 
 The auther of a comment can also edit or delete the comment.
-
+## Prerequisites
+*Must have Google App Engine installed and configured on your local machine.
+*install google app engine python component
+```
+gcloud components install app-engine-python
+```
+*install jinja2 if you plan to use on localhost
+```
+pip install Jinja2
+```
 ## Getting Started
-
+*clone the repository to your local machine
+*in command line window, navigate to the repository
+*if you would like to test on local host, navigate to the parent folder of the repository and type:
+```
+dev_appserver.py engineapp
+```
+*if you would like to deploy, you need to
+*deploy index.yaml first, after the index is built, deploy the app
+example:
+```
+gclould app deploy index.yaml
+# Wait for the index to be built, then
+gclould app deploy engineapp
+```
+### Running on localhost
 if you are running localhost on port 8080
 your starting page will be:
 
