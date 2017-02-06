@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>
+		Sign Up Page
+	</title>
+</head>
+<body>
+
+<h1>Please Sign Up</h1>
+<br>
+
+	
+
+<form method="post">
+<table>
+	<tr>
+		<td>Username:</td><td><input type="text" name="username" value={{username}}>{{error_username}}</td>
+	</tr>
+	<tr>
+		<td>password:</td><td><input type="password" name="password" value=''>{{error_password}}</td>
+	</tr>
+	<tr>
+		<td>verify password:</td><td><input type="password" name="verify" value=''>{{error_verify}}</td>
+	</tr>
+	<tr>
+		<td>email(optional):</td><td><input type="text" name="email" value={{email}}>{{error_email}}</td>
+	</tr>
+</table>
+
+<input type="submit">
+</form>
+
+<p>Already have an account?</p>
+<p>Click <a href="/login">here</a> to log in</p>
+</body>
+</html>

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Manage My Posts</h1>
+{%for blog in blogs%}
+<h3><a href="/post/{{blog.key().id()}}">{{blog.subject}}</a></h3>{{blog.created}}
+<br>
+<pre>{{blog.content}}</pre>
+<a href="/myposts/{{blog.key().id()}}/delete">Delete</a>
+<a href="/myposts/{{blog.key().id()}}/edit">Edit</a>
+</form>
+{%endfor%}
+{%endblock%}

@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Login</title>
+	<link rel="stylesheet" type="text/css" href="/css/main.css">
+</head>
+<body>
+<h1>Please log in</h1>
+	<form method="post">
+		<table>
+			<tr>
+				<td>Username</td>
+				<td><input type="text" name="username" value={{username}}></td>
+			</tr>
+			<tr>
+				<td>Password</td>
+				<td><input type="password" name="password"></td>
+			</tr>
+			
+		</table>
+		<div class='error'>{{error}}</div>
+		<div class="form-check">
+		  <label class="form-check-label">
+  			  <input class="form-check-input" name = "chkRM" type="checkbox" value="1">
+  			  <!-- # <input class="form-check-input" type="checkbox" value="anything" checked>-->
+   				 Remember me
+		  </label>
+		</div>
+		<input type="Submit" name="" value="Login">
+	</form>
+<p>Don't have an account?<p> 
+Click <a href="/signup">Here</a> to sign up.
+<br>
+<br>
+Or click <a href="/">Here</a> to proceed as guest
+</body>
+</html>

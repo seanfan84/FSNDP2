@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+
+{% block content %}
+{#{{ super() }}#}
+<pre>
+Welcome.
+
+Here is a simple instruction about what you can do:
+
+(Login required)	New Post - Submit new post and be redirected to it
+			All Posts - list all posts
+(Login required)		you can like/unlike a post by clicking the 'like' button
+(Login required)		you can click on a title to enter the post where you can post/edit/delete comments as author or reader
+(Login required)	My Posts - list posts submited by you
+(Login required)		delete/edit your post
+			Login/Logout
+
+You will be redirected to login page whenever a operation requires a logged-in user.
+</pre>
+{% endblock %}

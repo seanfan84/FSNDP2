@@ -1,0 +1,39 @@
+{%extends 'base.html'%}
+{%block head%}
+{{super()}}
+	<title>Blog- {{blog.subject}} </title>
+{%endblock%}
+{%block content%}
+<div class="blog">
+	<div class="subject"><h2>{{blog.subject}}</h2></div>
+	<div class="created">{{blog.created}}</div>
+	<pre class="content">{{blog.content}}</pre>
+	<div>Author:{{blog.user}}</div>
+</div>
+
+
+
+	{%if user%}
+	<form method="post" action="/post/{{blog.key().id()}}/comment">
+	<div class="form-group">
+		<textarea class = "col-md-12 commentbox" name = "content">{{content}}</textarea>
+		<input type="submit" value="Post comment">
+	</div>
+	</form>
+	{%endif%}
+
+
+{%if comments%}	
+{%for comment in comments%}
+<div class='commentContainer'>
+	<div class="commentContent">user {{comment.user.username}} commented:<br><pre>{{comment.content}}</pre></div>
+
+	{% if comment.user.key().id()|string() == UID|string() %}
+		<a href="/comment/{{comment.key().id()}}/delete">Delete</a>
+		<a href="/comment/{{comment.key().id()}}/edit">Edit</a>
+	{% endif %}
+</div>
+{%endfor%}
+{%endif%}
+
+{%endblock%}

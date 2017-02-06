@@ -1,0 +1,45 @@
+/*
+*{
+	border: 1px solid red;
+
+}
+
+body{
+	font-family: sans-serif;
+	width: 800px;
+	margin: 0 auto;
+}
+*/
+.error{
+	color: red;
+}
+
+input[type=text]{
+	width:100%;
+	font-size: 1.5em;
+}
+input[type=password]{
+	width:100%;
+	font-size: 1.5em;
+}
+
+
+textarea{
+/*	width: 100%;*/
+	max-width: 100%;
+	height: 450px;
+}
+input[type=submit]{
+	margin-top: 25px;
+	width: 150px;
+	height:30px;
+	font-size: 1.5em;
+}
+
+.subject{
+	margin-bottom:0px;
+	font-size: 2em;
+}
+.commentbox{
+	height:3em;
+}

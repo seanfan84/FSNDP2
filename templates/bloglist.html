@@ -1,0 +1,32 @@
+{%extends "base.html"%}
+{%block content%}
+
+
+<div class="row">
+<div class="col-md-12"><h1>All Posts</h1>
+</div>
+</div>
+{%for blog in blogs%}
+<div class="row">
+	<div class="col-md-12 subject"><a href="/post/{{blog.key().id()}}">{{blog.subject}}</a></div>
+</div>
+
+<div class="row">
+	<div class="col-md-8">Submit Time:{{blog.created}}</div>
+	<div class="col-md-4">Author:{{blog.user}}</div>
+</div>
+
+<div class="row"><div class="col-md-12"> Content:</div></div>
+
+<div class="row">
+	<div class="col-md-12"><pre>{{blog.content}}</pre></div>
+</div>
+{% if PID %}
+<form method="get" action="/postlist/{{blog.key().id()}}/like">
+		<div>Total Likes:{{blog.likecount}}</div><input style="font-size:0.75em" type="submit" value="&#128077; like">
+</form>
+<br>
+{% endif %}
+
+{%endfor%}
+{%endblock%}

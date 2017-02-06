@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<link rel="stylesheet" type="text/css" href="/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="/css/main.css">
+
+<!-- 
+	<style type="text/css">
+		*{
+			border:red solid 1px;
+		}
+		.header{
+			display: inline-block;
+			color: red;
+			width: 19%;
+			margin: auto;
+			text-align: center;
+		}
+		.content{
+			display: block;
+			width: 100%;
+			text-align: center;
+			margin:  auto;
+		}
+		footer{
+			width:100%;
+			text-align: center;
+		}
+	</style>
+-->
+</head>
+<body>
+<div class="container">
+	<div class="row">
+	
+		<div class="col-md-2"><a href="/newpost">New Post</a></div>
+		<div class="col-md-2"><a href="/bloglist">All Posts</a></div>
+		<div class="col-md-2"><a href="/myposts">My Posts</a></div>
+		<div class="col-md-4">
+		{%if name != None %}
+		Welcome,
+		{%else%}
+		Welcome, Guest
+		{%endif%}
+		{{name}}</div>
+		<div class="col-md-2"><a href={{link}}>{{button}}</a></div>
+
+			</div>
+<hr>
+
+{%block content%}
+THIS IS TO BE OVERWRITTEN IF YOU USE SUPER() FUNCTION IN CHILD BLOCKS
+{%endblock%}
+
+
+
+<hr>
+	<div class="row">
+	<div class="col-md-12"> 
+	Contect me
+	</div>
+	</div>
+</div>
+</body>
+</html>
