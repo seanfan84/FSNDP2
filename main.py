@@ -130,11 +130,10 @@ class Handler(webapp2.RequestHandler):
         # self.redirect('/welcome?name= '+username)
         self.redirect('/')
 
-
     def valid_cookie(self, redirect=True):
-    	#There is a bug in this function
-    	#Only user id, and password are checked
-    	#As blog only have username saved
+        # There is a bug in this function
+        # Only user id, and password are checked
+        # As blog only have username saved
         username = self.request.cookies.get("name")
         uid = self.request.cookies.get('UID')
         pid = self.request.cookies.get('PID')
@@ -255,12 +254,12 @@ class NewPost(Handler):
         params['subject'] = subject
         params['content'] = content
 
-        #check if the user is logged in and making sure nobody is playing
-        #tricks with params['name']
+        # check if the user is logged in and making sure nobody is playing
+        # tricks with params['name']
         if not params['user'] or not params['user'].username == params['name']:
         	self.response.write("you are not authorised to perform this \
-        		operation due to verification issue, click <a href='/'>Here\
-        		</a> to go to homepage")
+            operation due to verification issue, click <a href='/'>Here\
+            </a> to go to homepage")
 
         if not subject:
             params['error_subject'] = 'The blog must have a tittle'
@@ -319,7 +318,7 @@ class PostDelete(Handler):
         params = self.valid_cookie()
         blog = Blog.get_by_id(int(blog_id))
         if blog.user == params['name'] and \
-        params['name'] == params['user'].username:
+                params['name'] == params['user'].username:
 
             comments = Comment.gql('where post=:post', post=blog)
             for c in comments:
@@ -353,9 +352,9 @@ class PostEdit(Handler):
         user = params['user']
 
         if params['name'] == blog.user and user and \
-        user.username == params['name']:
-	        subject = self.request.get('subject')
-	        content = self.request.get('content')
+                user.username == params['name']:
+            subject = self.request.get('subject')
+            content = self.request.get('content')
 
         if not content:
             params['error_content'] = 'content cannot be empty'
@@ -422,7 +421,7 @@ class CommentSubmit(Handler):
 
         if not user or user.username != params['name']:
         	self.response.write("Operation not permitted, contact Admin. \
-        		Click <a href='/'>Here</a> to get back to homepage")
+                Click <a href='/'>Here</a> to get back to homepage")
 
         content = self.request.get('content')
         # logging.info(content)
