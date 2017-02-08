@@ -11,8 +11,9 @@
 	<div>Author:{{blog.user}}</div>
 </div>
 
-
-
+<br><br>
+<a class="button" href="{{sourceUrl}}">Get Back</a>
+<br><br>
 	{%if user%}
 	<form method="post" action="/post/{{blog.key().id()}}/comment">
 	<div class="form-group">

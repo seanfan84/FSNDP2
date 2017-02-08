@@ -130,7 +130,11 @@ class Handler(webapp2.RequestHandler):
         # self.redirect('/welcome?name= '+username)
         self.redirect('/')
 
+
     def valid_cookie(self, redirect=True):
+    	#There is a bug in this function
+    	#Only user id, and password are checked
+    	#As blog only have username saved
         username = self.request.cookies.get("name")
         uid = self.request.cookies.get('UID')
         pid = self.request.cookies.get('PID')
@@ -138,7 +142,7 @@ class Handler(webapp2.RequestHandler):
 
         if username and uid and pid:
             user = User.get_by_id(int(uid))
-            if pid != user.password.split(',')[0]:
+            if pid != user.password.split(',')[0] or username != user.username:
                 if redirect is True:
                     self.redirect('/login')
                 return params
@@ -251,6 +255,13 @@ class NewPost(Handler):
         params['subject'] = subject
         params['content'] = content
 
+        #check if the user is logged in and making sure nobody is playing
+        #tricks with params['name']
+        if not params['user'] or not params['user'].username == params['name']:
+        	self.response.write("you are not authorised to perform this \
+        		operation due to verification issue, click <a href='/'>Here\
+        		</a> to go to homepage")
+
         if not subject:
             params['error_subject'] = 'The blog must have a tittle'
         if not content:
@@ -307,7 +318,9 @@ class PostDelete(Handler):
         self.response.write('entered handler corretly.')
         params = self.valid_cookie()
         blog = Blog.get_by_id(int(blog_id))
-        if blog.user == params['name']:
+        if blog.user == params['name'] and \
+        params['name'] == params['user'].username:
+
             comments = Comment.gql('where post=:post', post=blog)
             for c in comments:
                 c.delete()
@@ -329,7 +342,7 @@ class PostEdit(Handler):
             params['user'] = blog.user
             params['subject'] = blog.subject
             params['content'] = blog.content
-
+            params['sourceUrl'] = "/myposts"
             self.render('editpost.html', **params)
         else:
             self.redirect('/myposts')
@@ -337,10 +350,13 @@ class PostEdit(Handler):
     def post(self, blog_id):
         params = self.valid_cookie()
         blog = Blog.get_by_id(int(blog_id))
+        user = params['user']
 
-        subject = self.request.get('subject')
-        content = self.request.get('content')
-        # params['blog']= blog
+        if params['name'] == blog.user and user and \
+        user.username == params['name']:
+	        subject = self.request.get('subject')
+	        content = self.request.get('content')
+
         if not content:
             params['error_content'] = 'content cannot be empty'
         if not subject:
@@ -349,7 +365,7 @@ class PostEdit(Handler):
             blog.subject = subject
             blog.content = content
             blog.put()
-            time.sleep(0.1)
+            time.sleep(0.2)
             self.redirect('/myposts')
         else:
             params['subject'] = subject
@@ -393,6 +409,8 @@ class SinglePost(Handler):
         params['blog'] = post
         comments = Comment.gql('where post=:1 order by created desc  ', post)
         params['comments'] = comments
+        params['sourceUrl'] = "/bloglist"
+
         self.render("blog_single.html", **params)
 
 
@@ -401,6 +419,11 @@ class CommentSubmit(Handler):
         params = self.valid_cookie()
         user = User.get_by_id(int(params['UID']))
         post = Blog.get_by_id(int(post_id))
+
+        if not user or user.username != params['name']:
+        	self.response.write("Operation not permitted, contact Admin. \
+        		Click <a href='/'>Here</a> to get back to homepage")
+
         content = self.request.get('content')
         # logging.info(content)
         comment = Comment(post=post, content=content, user=user)
@@ -432,6 +455,7 @@ class CommentEdit(Handler):
         comment = Comment.get_by_id(int(comment_id))
         params['comment'] = comment
         sourceURL = '/post/'+str(comment.post.key().id())
+        params['sourceUrl'] = sourceURL
         if params['UID'] == str(comment.user.key().id()):
             # self.response.write('you are about to edit a comment')
             self.render('editcomment.html', **params)
