@@ -141,20 +141,17 @@ class Handler(webapp2.RequestHandler):
 
         if username and uid and pid:
             user = User.get_by_id(int(uid))
-            if pid != user.password.split(',')[0] or username != user.username:
-                if redirect is True:
-                    self.redirect('/login')
-                return params
+            if pid == user.password.split(',')[0] and \
+                    username == user.username:
+                params['name'] = username
+                params['button'] = 'Logout'
+                params['link'] = '/logout'
+                params['UID'] = uid
+                params['user'] = user
+                params['PID'] = pid
         else:
             if redirect is True:
                 self.redirect('/login')
-            return params
-        params['name'] = username
-        params['button'] = 'Logout'
-        params['link'] = '/logout'
-        params['UID'] = uid
-        params['user'] = user
-        params['PID'] = pid
         return params
 
 
@@ -257,7 +254,7 @@ class NewPost(Handler):
         # check if the user is logged in and making sure nobody is playing
         # tricks with params['name']
         if not params['user'] or not params['user'].username == params['name']:
-        	self.response.write("you are not authorised to perform this \
+            self.response.write("you are not authorised to perform this \
             operation due to verification issue, click <a href='/'>Here\
             </a> to go to homepage")
 
@@ -314,9 +311,16 @@ class MyPosts(Handler):
 
 class PostDelete(Handler):
     def get(self, blog_id):
-        self.response.write('entered handler corretly.')
         params = self.valid_cookie()
         blog = Blog.get_by_id(int(blog_id))
+
+        if not blog:
+            self.redirect('/404')
+            return
+        if not params['user']:
+            self.redirect('/login')
+            return
+
         if blog.user == params['name'] and \
                 params['name'] == params['user'].username:
 
@@ -337,6 +341,12 @@ class PostEdit(Handler):
     def get(self, blog_id):
         params = self.valid_cookie()
         blog = Blog.get_by_id(int(blog_id))
+
+        # Check if blog exist, if not redirect to error 404 page
+        if not blog:
+            self.redirect('/404')
+            return
+
         if blog.user == params['name']:
             params['user'] = blog.user
             params['subject'] = blog.subject
@@ -351,10 +361,18 @@ class PostEdit(Handler):
         blog = Blog.get_by_id(int(blog_id))
         user = params['user']
 
-        if params['name'] == blog.user and user and \
-                user.username == params['name']:
-            subject = self.request.get('subject')
-            content = self.request.get('content')
+        # if blog not exist, redirect to 404 page
+        if not blog:
+            self.redirect('/404')
+            return
+
+        # If user  not logged in, redirect to login page.
+        if not user or user.username != blog.user:
+            self.redirect('/login')
+            return
+
+        subject = self.request.get('subject')
+        content = self.request.get('content')
 
         if not content:
             params['error_content'] = 'content cannot be empty'
@@ -377,6 +395,10 @@ class PostLike(Handler):
         params = self.valid_cookie()
         post = Blog.get_by_id(int(post_id))
 
+        # if blog not exist, redirect to 404 page
+        if not post:
+            self.redirect('/404')
+
         if post.user == params['name']:
             self.response.write('You cannot like your\
              own post, click <a href= "/bloglist">here</a> to get back')
@@ -385,7 +407,6 @@ class PostLike(Handler):
             like = db.GqlQuery(
                 'select * from Like where user_id=:1 and post_id=:2',
                 user_id, post_id).get()
-            post = Blog.get_by_id(int(post_id))
 
             if like:
                 like.delete()
@@ -405,10 +426,17 @@ class SinglePost(Handler):
     def get(self, post_id):
         params = self.valid_cookie()
         post = Blog.get_by_id(int(post_id))
+
+        if not post:
+            self.redirect('/404')
+            return
+
         params['blog'] = post
         comments = Comment.gql('where post=:1 order by created desc  ', post)
         params['comments'] = comments
         params['sourceUrl'] = "/bloglist"
+
+        logging.info('wired')
 
         self.render("blog_single.html", **params)
 
@@ -419,9 +447,15 @@ class CommentSubmit(Handler):
         user = User.get_by_id(int(params['UID']))
         post = Blog.get_by_id(int(post_id))
 
+        if not post:
+            self.redirect('/404')
+            return
+
         if not user or user.username != params['name']:
-        	self.response.write("Operation not permitted, contact Admin. \
-                Click <a href='/'>Here</a> to get back to homepage")
+            self.response.write(
+                "Operation not permitted, contact Admin. Click <a href='/'>\
+                Here</a> to get back to homepage")
+            return
 
         content = self.request.get('content')
         # logging.info(content)
@@ -436,6 +470,15 @@ class CommentDelete(Handler):
         params = self.valid_cookie()
         comment = Comment.get_by_id(int(comment_id))
         sourceURL = '/post/' + str(comment.post.key().id())
+
+        if not comment:
+            self.redirect('/404')
+            return
+
+        if not any(params):
+            self.redirect('/login')
+            return
+
         if params['UID'] == str(comment.user.key().id()):
             # self.response.write('you are about to delete a comment')
             comment.delete()
@@ -452,6 +495,15 @@ class CommentEdit(Handler):
     def get(self, comment_id):
         params = self.valid_cookie()
         comment = Comment.get_by_id(int(comment_id))
+
+        if not comment:
+            self.redirect('/404')
+            return
+
+        if not any(params):
+            self.redirect('/login')
+            return
+
         params['comment'] = comment
         sourceURL = '/post/'+str(comment.post.key().id())
         params['sourceUrl'] = sourceURL
@@ -465,6 +517,15 @@ class CommentEdit(Handler):
     def post(self, comment_id):
         params = self.valid_cookie()
         comment = Comment.get_by_id(int(comment_id))
+
+        if not comment:
+            self.redirect('/404')
+            return
+
+        if not any(params):
+            self.redirect('/login')
+            return
+
         sourceURL = '/post/' + str(comment.post.key().id())
         if params['UID'] == str(comment.user.key().id()):
             content = self.request.get('content')
@@ -478,9 +539,14 @@ class CommentEdit(Handler):
             click <a href= "%s"> Here </a> to get back' % str(sourceURL))
 
 
+class Error404(Handler):
+    def get(self):
+        self.render('404.html')
+
+
 app = webapp2.WSGIApplication([
     ('/', HomePage),
-
+    ('/404', Error404),
     ('/signup', SignUp),
     ('/login', Login),
     ('/logout', Logout),
